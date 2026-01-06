@@ -14,6 +14,7 @@ test("SuiClient: getBalance + faucet (devnet)", async () => {
   const suiClient = new SuiClient({ url: getFullnodeUrl("devnet") });
 
   // 3) Balance BEFORE
+  const before = await suiClient.getBalance({ owner: MY_ADDRESS });
 
   // 4) Request from faucet (devnet)
   await requestSuiFromFaucetV2({
@@ -25,6 +26,7 @@ test("SuiClient: getBalance + faucet (devnet)", async () => {
   await new Promise((r) => setTimeout(r, 2000));
 
   // 5) Balance AFTER (no polling, just one check)
+  const after = await suiClient.getBalance({ owner: MY_ADDRESS });
 
   // 6) Assert it increased
   expect(Number(after.totalBalance)).toBeGreaterThan(

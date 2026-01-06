@@ -27,3 +27,4 @@ fun hero_mint_should_fail() {
     let _hero = hero::mint_hero(&version, scenario.ctx());
     abort(EShouldHaveFailed)
 }
+

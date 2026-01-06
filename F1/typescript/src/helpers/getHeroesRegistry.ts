@@ -12,8 +12,30 @@ interface HeroesRegistry {
  */
 export const getHeroesRegistry = async (): Promise<HeroesRegistry> => {
   // TODO: Implement this function
+  const registry = await suiClient.getObject({
+    id: ENV.HEROES_REGISTRY_ID,
+    options: {
+      showContent: true,
+    },
+  });
+  if (!registry.data) {
+    return {
+      ids: [],
+      counter: 0,
+    };
+  }
+  const content = registry.data.content as Extract<
+    SuiParsedData,
+    {
+      dataType: "moveObject";
+    }
+  >;
+  const fields = content.fields as {
+    ids: string[];
+    counter: string;
+  };
   return {
-    ids: [],
-    counter: 0,
+    ids: fields.ids,
+    counter: parseInt(fields.counter),
   };
 };

@@ -1,7 +1,5 @@
 ## Sui & Move Bootcamp
 
-## [ B1 Slides - An intro to Sui Move](https://docs.google.com/presentation/d/1K83nXHSGqQMs0be8Yz33iZdmm-lSR27WPBPCIczHPMA/edit?usp=sharing)
-
 ### Move Basic Concepts
 
 ##### What you will learn in this module:
@@ -16,10 +14,13 @@
 - Move Abilities: key, store
 - `Drop` ability
   -Adding fields in `Hero `
-  - Adding a name `String` field
-    -Create an `InsignificantWeapon` which can be dropped.
-    -Create a `Weapon` which can't be dropped.
-    -Test drop abilities
+  - Adding stamina `u64` field
+  - Adding category object (drop)
+- Create a Weapon in an `Option<T>`
+  - Testing weapon creation
+  - Testing with Options. Why we need a `drop` ability?
+- Object Composition
+  - Transferring a weapon
 
 ### Useful Links
 

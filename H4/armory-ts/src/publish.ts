@@ -2,7 +2,6 @@ import { SuiClient, SuiObjectChangeCreated, SuiObjectChangePublished, SuiTransac
 import { Keypair } from '@mysten/sui/cryptography';
 import { ADMIN_KEYPAIR } from './consts';
 import { Transaction } from '@mysten/sui/transactions';
-import path from 'path';
 
 import { execSync } from 'child_process';
 
@@ -17,7 +16,7 @@ export class PublishSingleton {
     public static async publish(client?: SuiClient, signer?: Keypair, packagePath?: string) {
         client ??= new SuiClient({ url: getFullnodeUrl('localnet') });
         signer ??= ADMIN_KEYPAIR;
-        packagePath ??= path.resolve(__dirname, '..', '..', 'armory');
+        packagePath ??= `${__dirname}/../../armory`;
         if (!PublishSingleton.instance) {
             const publishResp = await publishPackage(client, signer, packagePath);
             const packageId = findPublishedPackage(publishResp)?.packageId;

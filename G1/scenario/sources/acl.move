@@ -80,5 +80,8 @@ public fun new_admins_for_testing(admin: address): Admins {
     }
 }
 
-// Task: Call init from tests: `init_for_testing`
+#[test_only]
+public fun init_for_testing(ctx: &mut TxContext) {
+    init(ACL(), ctx);
+}
 

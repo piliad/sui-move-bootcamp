@@ -23,7 +23,7 @@ public struct Hero has key, store {
 
 ```
 SUI_NETWORK=https://rpc.testnet.sui.io:443
-PACKAGE_ID=0xa007ad71e8b80fe7d8fc67d166eb8aa838d74239623218a2287e3f3ffc52c2ca
+PACKAGE_ID=0x26cc4e8173393efa8411b376c17420dc59e48ee6649a634cfaee98477efe5435
 ```
 
 - Run the following commands:

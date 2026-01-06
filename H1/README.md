@@ -55,7 +55,18 @@ In `hero.move`, modify the hero creation to:
 - Replace free minting with a purchase system
 - Set the price to 5 SUI
 - Create a new `mint_hero_v2` function that accepts payment
-- Deprecate the `mint_hero` method with an error code
+
+# The below Tasks are deprecated, to be removed after the Istanbul bootcamp
+### 3. Add Type-Safe Equipment Keys
+In `hero.move`, implement:
+- New structs for sword and shield equipment keys
+- Update the equipment functions to use these type-safe keys instead of strings
+
+### 4. Add Hero Power
+In `hero.move`, add:
+- A `power` field to the `Hero` struct
+- Logic to increase power when equipping swords (by attack value) or shields (by defense value)
+
 ## Useful Links
 
 - [Package Upgrades Documentation](https://docs.sui.io/concepts/sui-move-concepts/packages/upgrade)

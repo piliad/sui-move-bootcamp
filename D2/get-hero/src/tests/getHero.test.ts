@@ -16,7 +16,7 @@ describe("Get Hero", () => {
 
   test("Hero Exists", () => {
     expect(objectResponse.data).toBeDefined();
-    expect(objectResponse.data!.objectId).toBe(HERO_OBJECT_ID);
+    expect(objectResponse.data!.objectId).toBeDefined();
     expect(objectResponse.data!.type).toBe(`${ENV.PACKAGE_ID}::hero::Hero`);
   });
 

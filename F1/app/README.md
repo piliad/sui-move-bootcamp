@@ -13,6 +13,14 @@ In an approach similar to the section E2, we will be using the [@mysten/create-d
 ## Instructions
 
 ### 1. Setup the app
+
+- Create a `.env` file at the same level with your [.env.example](./my-first-sui-dapp/.env.example) one, following the same format:
+
+```
+VITE_PACKAGE_ID=0xcf55ac67195cc3f7290cc7e7ff9f64bcac4140b3feb99587d75c5c4e60c5105b
+VITE_HEROES_REGISTRY_ID=0x4473ad8db121386abef670f3c752b54836673d995d6963100225415d369e74b1
+```
+
 - Run:
 
 ```
@@ -48,6 +56,7 @@ In this view, we will build the code for signing and executing a transaction tha
 1. Create a `<CreateHeroForm />` component, with a simple Button that mints the Hero, the Weapon, and equips the Weapon to the Hero:
    - For the inputs of the Transaction (`name` and `stamina` of the `Hero`, `name` and `attack` of the `Weapon`), you can initially use hard-coded values.
    - You shoud use the `mintHeroWithWeapon` TS script we built in the previous exercise to populate your `Transction` with commands.
+   - Remember that the `PACKAGE_ID` and the `HEROES_REGISTRY_ID` should be retrieved by the `.env` file using the `import.meta.env` object in Vite (similar to the approach we are following in the `<OwnedObjects />` component to access the package id)
    - You should use the [useSignAndExecuteTransaction](https://sdk.mystenlabs.com/dapp-kit/wallet-hooks/useSignAndExecuteTransaction) hook that is provided by the [Sui dApp Kit](https://sdk.mystenlabs.com/dapp-kit) to sign and execute the transaction
    - You should refresh the `HeroesList` to display the new Hero in case of successful execution, using `suiClient.waitForTransactioBlock` and `queryClient.invalidateQueries`
 

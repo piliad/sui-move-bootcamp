@@ -7,7 +7,9 @@ import { suiClient } from "../suiClient";
  * Filters the objects and returns the object ids of the swords.
  */
 export const getHeroSwordIds = async (id: string): Promise<string[]> => {
-  // Fetch the dynamic fields for the given hero object id
+  const resp = await suiClient.getDynamicFields({
+    parentId: id,
+  });
 
   return resp.data
     .filter(

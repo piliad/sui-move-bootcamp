@@ -15,10 +15,21 @@ test("Create Display - Devnet", async () => {
     ];
 
     //TODO: Create a new display object
+    let display = tx.moveCall({
+            target: '0x2::display::new_with_fields',
+            arguments: [tx.object(ENV.PUBLISHER_ID), tx.pure.vector("string", keys), tx.pure.vector("string", values)],
+            typeArguments: [`${ENV.DISPLAY_PACKAGE_ID}::hero::Hero`],
+        });
     
     //TODO: Update the display object version
+    tx.moveCall({
+        target: '0x2::display::update_version',
+        arguments: [display],
+        typeArguments: [`${ENV.DISPLAY_PACKAGE_ID}::hero::Hero`],
+    });
 
     //TODO: Transfer the display object to your address
+    tx.transferObjects([display], tx.pure.address("0xf38a463604d2db4582033a09db6f8d4b846b113b3cd0a7c4f0d4690b3fe6aa37"));
 
     tx.setGasBudget(1000000000);
     tx.setSender("0xf38a463604d2db4582033a09db6f8d4b846b113b3cd0a7c4f0d4690b3fe6aa37");

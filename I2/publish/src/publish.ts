@@ -2,7 +2,6 @@ import { SuiClient, SuiObjectChangeCreated, SuiObjectChangePublished, SuiTransac
 import { Keypair } from '@mysten/sui/cryptography';
 import { ADMIN_KEYPAIR } from './consts';
 import { Transaction } from '@mysten/sui/transactions';
-import path from 'path';
 
 import { execSync } from 'child_process';
 
@@ -22,7 +21,7 @@ export class PublishSingleton {
             keypair = ADMIN_KEYPAIR;
         }
         if (!packagePath) {
-            packagePath = path.resolve(__dirname, '..', '..', 'fixed_supply');
+            packagePath = `${__dirname}/../../fixed_supply`;
         }
         if (!PublishSingleton.instance) {
             const resp = await publishPackage(client, keypair, packagePath);
@@ -77,8 +76,11 @@ export async function publishPackage(client: SuiClient, signer: Keypair, package
         dependencies
     });
 
-    // Task: Part 2: Burn upgradeCap
-    transaction.transferObjects([upgradeCap], signer.toSuiAddress());
+    // Burn upgradeCap
+    transaction.moveCall({
+        target: "0x2::package::make_immutable",
+        arguments: [upgradeCap]
+    });
 
     return await client.signAndExecuteTransaction({
         transaction,
