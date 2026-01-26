@@ -1,0 +1,3 @@
+[package]
+name = "loot_crate"
+edition = "2024"
