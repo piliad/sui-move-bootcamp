@@ -8,7 +8,7 @@ This folder demonstrates how to use [Sui's native on-chain randomness](https://d
 
 1. **Understanding On-Chain Randomness** - Why blockchain randomness is hard and how Sui solves it
 2. **Using the Random Object** - How to generate random values in Move contracts
-3. **Weighted Randomness** - Implementing probability distributions (e.g., loot drop rates)
+3. **Weighted Randomness** - Implementing probability distributions (e.g., sword drop rates)
 4. **Security Best Practices** - Common pitfalls and how to avoid them
 5. **End-to-End Integration** - Calling randomness functions from TypeScript
 
@@ -33,16 +33,16 @@ Sui provides a native `Random` object (at address `0x8`) that generates random v
 
 ## Examples
 
-### 1. Simple Example: Loot Crate
+### 1. Simple Example: Treasure Chest
 
-A Move contract demonstrating randomness in a game context - opening loot crates to receive random salvaged items, inspired by [Eve Frontier's](https://github.com/evefrontier/world-contracts) space exploration mechanics.
+A Move contract demonstrating randomness in a game context - a hero opens treasure chests at the blacksmith to receive random swords.
 
 **Location**: [move/](move/)
 
 **Features**:
 
-- Weighted random item drops (common to rare)
-- Random quantity generation
+- Weighted random sword drops (common to legendary)
+- Random power generation
 - Event emission for tracking
 
 ### 2. Full E2E Example: Plinko Game
@@ -96,33 +96,33 @@ pnpm loot
 Example output:
 
 ```
-🎲 Loot Crate - On-Chain Randomness Demo
+🎲 Treasure Chest - On-Chain Randomness Demo
 
 📍 Using address: 0x...
 💰 Balance: 1.2345 SUI
 
-📦 Creating and opening loot crate...
+📦 Creating and opening treasure chest...
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  ✨ You looted 3x Ancient Artifact! ✨
+  ✨ You received a Legendary Sword with 87 power! ✨
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  Rarity: 🟨 Legendary (5%)
+  Rarity: 🟨 Legendary (5%) - Power: 50-100
 
 🔗 Transaction: https://testnet.suivision.xyz/txblock/...
 ```
 
 #### Using Sui CLI
 
-Create and open a loot crate in a single PTB:
+Create and open a treasure chest in a single PTB:
 
 ```bash
 sui client ptb \
-  --move-call "<PACKAGE_ID>::loot_crate::create_crate" "vector[]" \
-  --assign crate \
-  --move-call "<PACKAGE_ID>::loot_crate::open_crate" crate @0x8 \
+  --move-call "<PACKAGE_ID>::treasure_chest::create_chest" '""' \
+  --assign chest \
+  --move-call "<PACKAGE_ID>::treasure_chest::open_chest" chest @0x8 \
   --gas-budget 10000000
 ```
 
@@ -135,15 +135,15 @@ import { Transaction } from "@mysten/sui/transactions";
 
 const tx = new Transaction();
 
-// Create a loot crate and open it in one transaction
-const crate = tx.moveCall({
-  target: `${PACKAGE_ID}::loot_crate::create_crate`,
-  arguments: [tx.pure.vector("u8", [])],
+// Create a treasure chest and open it in one transaction
+const chest = tx.moveCall({
+  target: `${PACKAGE_ID}::treasure_chest::create_chest`,
+  arguments: [tx.pure.string("")],
 });
 
 tx.moveCall({
-  target: `${PACKAGE_ID}::loot_crate::open_crate`,
-  arguments: [crate, tx.object("0x8")], // or utilize the existing tx.object.random() function
+  target: `${PACKAGE_ID}::treasure_chest::open_chest`,
+  arguments: [chest, tx.object("0x8")], // or utilize the existing tx.object.random() function
 });
 
 const result = await client.signAndExecuteTransaction({
@@ -178,19 +178,19 @@ entry fun my_random_function(random: &Random, ctx: &mut TxContext) {
 
 ### Weighted Randomness Example
 
-From our loot crate contract - implementing weighted drop rates:
+From our treasure chest contract - implementing weighted drop rates:
 
 ```move
 let roll = generator.generate_u8_in_range(1, 100);
 
 let (type_id, name) = if (roll <= 50) {
-    (ITEM_SCRAP_METAL, b"Scrap Metal")      // 50% chance
+    (SWORD_WOODEN, b"Wooden Sword")      // 50% chance
 } else if (roll <= 80) {
-    (ITEM_FUEL_CELLS, b"Fuel Cells")        // 30% chance
+    (SWORD_IRON, b"Iron Sword")          // 30% chance
 } else if (roll <= 95) {
-    (ITEM_RARE_MINERALS, b"Rare Minerals")  // 15% chance
+    (SWORD_STEEL, b"Steel Sword")        // 15% chance
 } else {
-    (ITEM_ANCIENT_ARTIFACT, b"Ancient Artifact") // 5% chance
+    (SWORD_LEGENDARY, b"Legendary Sword") // 5% chance
 };
 ```
 
@@ -223,15 +223,15 @@ Sui allows commands **before** a Random-consuming call, but rejects any commands
 
 ```bash
 # ALLOWED - commands before Random, Random call is last
-create_crate(...)        # ✓ before Random
-open_crate(..., @0x8)    # ✓ Random call is last
+create_chest(...)        # ✓ before Random
+open_chest(..., @0x8)    # ✓ Random call is last
 
 # REJECTED - commands after Random call
-open_crate(..., @0x8)    # Random call
+open_chest(..., @0x8)    # Random call
 do_something_else(...)   # ✗ not allowed after Random
 ```
 
-This is why our PTB works - `open_crate` is the final command.
+This is why our PTB works - `open_chest` is the final command.
 
 ### 2. Use `entry` Functions
 
@@ -239,10 +239,10 @@ Mark randomness-consuming functions as `entry` to prevent other Move modules fro
 
 ```move
 // GOOD: Other modules cannot call this
-entry fun open_crate(crate: LootCrate, random: &Random, ctx: &mut TxContext) { ... }
+entry fun open_chest(chest: TreasureChest, random: &Random, ctx: &mut TxContext) { ... }
 
 // BAD: Other modules could compose this unexpectedly
-public fun open_crate(crate: LootCrate, random: &Random, ctx: &mut TxContext) { ... }
+public fun open_chest(chest: TreasureChest, random: &Random, ctx: &mut TxContext) { ... }
 ```
 
 **Why?** The PTB restriction handles direct transaction composition, but `entry` adds defense against cross-module composition attacks.
@@ -251,13 +251,13 @@ public fun open_crate(crate: LootCrate, random: &Random, ctx: &mut TxContext) { 
 
 ```move
 // GOOD: Create generator internally
-entry fun open_crate(random: &Random, ctx: &mut TxContext) {
+entry fun open_chest(random: &Random, ctx: &mut TxContext) {
     let mut gen = new_generator(random, ctx);
     // ...
 }
 
 // BAD: Generator passed from outside
-entry fun open_crate(gen: &mut RandomGenerator) {
+entry fun open_chest(gen: &mut RandomGenerator) {
     // Attacker could manipulate the generator
 }
 ```
@@ -267,23 +267,23 @@ entry fun open_crate(gen: &mut RandomGenerator) {
 Design functions so all outcome paths consume similar gas:
 
 ```move
-entry fun open_crate(crate: LootCrate, random: &Random, ctx: &mut TxContext) {
+entry fun open_chest(chest: TreasureChest, random: &Random, ctx: &mut TxContext) {
     let mut gen = new_generator(random, ctx);
     let roll = gen.generate_u8_in_range(1, 100);
 
-    // All paths create an item and emit an event - similar gas cost
-    let item = if (roll <= 95) {
-        create_common_item(ctx)
+    // All paths create a sword and emit an event - similar gas cost
+    let sword = if (roll <= 95) {
+        create_common_sword(ctx)
     } else {
-        create_rare_item(ctx)  // Same operations, different values
+        create_legendary_sword(ctx)  // Same operations, different values
     };
 
-    emit(CrateOpenedEvent { ... });
-    transfer::transfer(item, ctx.sender());
+    emit(ChestOpened { ... });
+    transfer::transfer(sword, ctx.sender());
 }
 ```
 
-**Why?** An attacker could set a gas budget that only succeeds on favorable outcomes, effectively retrying until they get rare items.
+**Why?** An attacker could set a gas budget that only succeeds on favorable outcomes, effectively retrying until they get legendary swords.
 
 ### 5. Consider Two-Transaction Pattern
 
@@ -366,18 +366,18 @@ Now that you've learned the concepts, try these exercises to deepen your underst
 
 ### Exercise 1: Modify Drop Rates
 
-Modify the loot crate contract to have different drop rates:
+Modify the treasure chest contract to have different drop rates:
 
-- 40% Scrap Metal
-- 35% Fuel Cells
-- 20% Rare Minerals
-- 5% Ancient Artifact
+- 40% Wooden Sword
+- 35% Iron Sword
+- 20% Steel Sword
+- 5% Legendary Sword
 
-**Hint:** Adjust the `roll` comparisons in `open_crate`.
+**Hint:** Adjust the `roll` comparisons in `open_chest`.
 
-### Exercise 2: Add a New Item Tier
+### Exercise 2: Add a New Sword Tier
 
-Add a "Mythic Component" item with a 1% drop chance. This should be the rarest item.
+Add a "Mythic Sword" with a 1% drop chance. This should be the rarest sword.
 
 ### Exercise 3: Implement a Dice Roll Function
 
@@ -411,39 +411,39 @@ Clone and study the [Plinko PoC](https://github.com/MystenLabs/plinko-poc):
 
 ## Code Walkthrough
 
-### Understanding the Loot Crate Contract
+### Understanding the Treasure Chest Contract
 
-Let's walk through [loot_crate.move](move/sources/loot_crate.move) step by step:
+Let's walk through [treasure_chest.move](move/sources/treasure_chest.move) step by step:
 
-**1. Item Constants (Lines 12-16)**
+**1. Sword Constants (Lines 12-16)**
 
 ```move
-const ITEM_SCRAP_METAL: u64 = 1;
-const ITEM_FUEL_CELLS: u64 = 2;
-const ITEM_RARE_MINERALS: u64 = 3;
-const ITEM_ANCIENT_ARTIFACT: u64 = 4;
+const SWORD_WOODEN: u64 = 1;
+const SWORD_IRON: u64 = 2;
+const SWORD_STEEL: u64 = 3;
+const SWORD_LEGENDARY: u64 = 4;
 ```
 
-These constants define item types. Using constants instead of magic numbers makes the code readable and maintainable.
+These constants define sword types. Using constants instead of magic numbers makes the code readable and maintainable.
 
 **2. Structs (Lines 18-39)**
 
-- `LootCrate` - The crate object that gets destroyed when opened
-- `SalvagedItem` - The reward item with type, name, and quantity
-- `CrateOpenedEvent` - Event for off-chain tracking
+- `TreasureChest` - The chest object that gets destroyed when opened
+- `Sword` - The reward item with type, name, and power
+- `ChestOpened` - Event for off-chain tracking
 
-**3. The `open_crate` Function (Lines 58-103)**
+**3. The `open_chest` Function (Lines 58-103)**
 This is where the magic happens. Notice:
 
 - It's marked `entry` (security requirement)
 - Takes `&Random` reference (not a generator)
 - Creates the generator internally
-- Uses weighted randomness for items
-- Different quantity ranges based on rarity
+- Uses weighted randomness for swords
+- Different power ranges based on rarity
 
 ### Understanding the TypeScript Client
 
-The [loot.ts](ts/src/loot.ts) file demonstrates:
+The [chest.ts](ts/src/chest.ts) file demonstrates:
 
 - Environment setup with dotenv
 - SuiClient initialization
@@ -477,7 +477,7 @@ Test your understanding with these questions:
 4. **Why should all outcome paths in a random function have similar gas costs?**
    <details>
    <summary>Answer</summary>
-   An attacker could set a low gas budget that only succeeds on certain outcomes. If rare items cost more gas to create, the attacker could retry until they get common items cheaply, then increase the budget only when they've observed a rare roll.
+   An attacker could set a low gas budget that only succeeds on certain outcomes. If rare swords cost more gas to create, the attacker could retry until they get common swords cheaply, then increase the budget only when they've observed a legendary roll.
    </details>
 
 5. **When would you use the two-transaction commit-reveal pattern?**

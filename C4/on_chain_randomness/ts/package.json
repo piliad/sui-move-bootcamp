@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "loot": "tsx src/loot.ts"
+    "chest": "tsx src/chest.ts"
   },
   "dependencies": {
     "@mysten/sui": "^1.45.2",

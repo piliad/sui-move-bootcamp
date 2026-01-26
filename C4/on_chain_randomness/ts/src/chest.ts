@@ -6,7 +6,7 @@ import { getSigner } from "./helpers/getSigner";
 const PACKAGE_ID = process.env.PACKAGE_ID;
 
 async function main() {
-  console.log("\n🎲 Loot Crate - On-Chain Randomness Demo\n");
+  console.log("\n🎲 Treasure Chest - On-Chain Randomness Demo\n");
 
   // Load from environment
   const address = process.env.ADDRESS;
@@ -40,19 +40,19 @@ async function main() {
     process.exit(1);
   }
 
-  console.log("\n📦 Creating and opening loot crate...\n");
+  console.log("\n📦 Creating and opening treasure chest...\n");
 
   const tx = new Transaction();
-  // Create a loot crate
-  const crate = tx.moveCall({
-    target: `${PACKAGE_ID}::loot_crate::create_crate`,
-    arguments: [tx.pure.vector("u8", [])],
+  // Create a treasure chest
+  const chest = tx.moveCall({
+    target: `${PACKAGE_ID}::treasure_chest::create_chest`,
+    arguments: [tx.pure.string("")],
   });
 
-  // Open the crate with randomness
+  // Open the chest with randomness
   tx.moveCall({
-    target: `${PACKAGE_ID}::loot_crate::open_crate`,
-    arguments: [crate, tx.object.random()],
+    target: `${PACKAGE_ID}::treasure_chest::open_chest`,
+    arguments: [chest, tx.object.random()],
   });
 
   // Execute transaction
@@ -65,33 +65,32 @@ async function main() {
     },
   });
 
-  // Parse the event to get loot info
+  // Parse the event to get sword info
   const event = result.events?.find(
-    (e) => e.type === `${PACKAGE_ID}::loot_crate::CrateOpenedEvent`
+    (e) => e.type === `${PACKAGE_ID}::treasure_chest::ChestOpened`
   );
 
   if (event && event.parsedJson) {
     const data = event.parsedJson as {
-      item_name: number[];
-      quantity: string;
+      sword_name: string;
+      power: string;
     };
 
-    // Convert item_name from bytes to string
-    const itemName = String.fromCharCode(...data.item_name);
-    const quantity = data.quantity;
+    const swordName = data.sword_name;
+    const power = data.power;
 
     console.log("━".repeat(50));
-    console.log(`\n  ✨ You looted ${quantity}x ${itemName}! ✨\n`);
+    console.log(`\n  ✨ You received a ${swordName} with ${power} power! ✨\n`);
     console.log("━".repeat(50));
 
     // Show rarity
     const rarityMap: Record<string, string> = {
-      "Scrap Metal": "⬜ Common (50%)",
-      "Fuel Cells": "🟦 Uncommon (30%)",
-      "Rare Minerals": "🟪 Rare (15%)",
-      "Ancient Artifact": "🟨 Legendary (5%)",
+      "Wooden Sword": "⬜ Common (50%) - Power: 1-10",
+      "Iron Sword": "🟦 Uncommon (30%) - Power: 10-25",
+      "Steel Sword": "🟪 Rare (15%) - Power: 25-50",
+      "Legendary Sword": "🟨 Legendary (5%) - Power: 50-100",
     };
-    console.log(`\n  Rarity: ${rarityMap[itemName] || "Unknown"}`);
+    console.log(`\n  Rarity: ${rarityMap[swordName] || "Unknown"}`);
   }
 
   console.log(
