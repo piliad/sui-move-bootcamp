@@ -27,6 +27,7 @@ This approach encourages interactive learning, enabling students to experiment, 
 - [C1: Capability Pattern and One Time Witness + Publisher](./C1/)
 - [C2: Object Display](./C2/)
 - [C3: PTBs Introduction](./C3/)
+- [C4: On-Chain Randomness](./C4/)
 
 ### Module D: Sui Client Interactions
 - [D1: Sui Client initialization and Fullnode restrictions](./D1/)
