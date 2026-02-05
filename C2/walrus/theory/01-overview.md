@@ -9,8 +9,7 @@ The gas costs in WAL are represented in FROST units (the smallest unit of a WAL)
 
 ### Storage Units
 FROST gas costs are per `Storage Unit`, a Storage Unit is measured in Bytes.
-Assuming a Storage Unit is 1000 bytes, for example, if a fully encoded blob is 100,000 bytes, the final cost will be:  
-( 1000 FROST * 100,000 bytes) / 1,000,000 = X WAL
+Currently, a `Storage Unit` is equal to **1Mb**(1024Kb -> 1024*1024 Bytes).
 
 ### Sources of Costs
 The sources of cost associated with Walrus Storage are:
