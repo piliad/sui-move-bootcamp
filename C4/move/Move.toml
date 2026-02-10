@@ -1,3 +1,5 @@
 [package]
 name = "treasure_chest"
 edition = "2024"
+
+[dependencies]
