@@ -19,11 +19,12 @@ fun init(otw: HERO, ctx: &mut TxContext) {
 
 /// Anyone can mint a hero.
 /// Hero starts with 100 health and 10 stamina.
-public fun mint_hero(version: &HeroVersion, ctx: &mut TxContext): Hero {
+public fun mint_hero(version: &HeroVersion, ctx: &mut TxContext) {
     version.check_is_valid();
-    Hero {
+    let hero = Hero {
         id: object::new(ctx),
         health: 100,
         stamina: 10
-    }
+    };
+    transfer::transfer(hero, ctx.sender());
 }

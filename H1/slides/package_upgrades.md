@@ -827,7 +827,7 @@ From the output, note:
 |---|---|
 | **Package ID** | Published Objects section |
 | **UpgradeCap ID** | Created Objects, type `0x2::package::UpgradeCap` |
-| **Version ID** | Created Objects, type `<pkg>::version::Version` |
+| **HeroVersion ID** | Created Objects, type `<pkg>::hero_version::HeroVersion` |
 
 ---
 
@@ -838,8 +838,7 @@ sui client call \
   --package <PACKAGE_ID> \
   --module hero \
   --function mint_hero \
-  --args <VERSION_ID> \
-  --gas-budget 10000000
+  --args <HERO_VERSION_ID>
 ```
 
 Inspect the result:
@@ -893,20 +892,23 @@ Requires 5 SUI payment to create a Hero.
 
 ```move
 // hero.move
+const EInsufficientPayment: u64 = 1;
 const EUseMintHeroV2Instead: u64 = 2;
+
 const HERO_PRICE: u64 = 5_000_000_000;  // 5 SUI
 
-public fun mint_hero(_version: &HeroVersion, _ctx: &mut TxContext): Hero {
+public fun mint_hero(_version: &HeroVersion, _ctx: &mut TxContext) {
     abort EUseMintHeroV2Instead  // deprecated
 }
 
 public fun mint_hero_v2(
     version: &HeroVersion, payment: Coin<SUI>, ctx: &mut TxContext,
-): Hero {
+) {
     version.check_is_valid();
     assert!(payment.value() >= HERO_PRICE, EInsufficientPayment);
     transfer::public_transfer(payment, ctx.sender());
-    Hero { id: object::new(ctx), health: 100, stamina: 10 }
+    let hero = Hero { id: object::new(ctx), health: 100, stamina: 10 };
+    transfer::transfer(hero, ctx.sender());
 }
 ```
 
@@ -918,10 +920,11 @@ public fun mint_hero_v2(
 // hero_version.move
 use sui::package::UpgradeCap;
 
+const EInvalidUpgradeCap: u64 = 1;
+
 const VERSION: u64 = 2;  // bumped from 1
 
-public fun migrate(self: &mut HeroVersion, cap: &UpgradeCap) {
-    assert!(cap.package() == @package_upgrade, EInvalidPackageVersion);
+public fun migrate(self: &mut HeroVersion) {
     self.version = VERSION;
 }
 ```
@@ -932,9 +935,8 @@ public fun migrate(self: &mut HeroVersion, cap: &UpgradeCap) {
 
 ```bash
 sui move build
-sui client upgrade \
-  --upgrade-capability <UPGRADE_CAP_ID> \
-  --gas-budget 100000000
+sui client test-upgrade \
+  --upgrade-capability <UPGRADE_CAP_ID>
 ```
 
 Note the **new Package ID** from the output.
@@ -948,13 +950,12 @@ Call `migrate` using the **new** package ID:
 ```bash
 sui client call \
   --package <NEW_PACKAGE_ID> \
-  --module version \
+  --module hero_version \
   --function migrate \
-  --args <VERSION_ID> <UPGRADE_CAP_ID> \
-  --gas-budget 10000000
+  --args <HERO_VERSION_ID> <UPGRADE_CAP_ID>
 ```
 
-After this, the Version object's `version` field is updated to `2`.
+After this, the HeroVersion object's `version` field is updated to `2`.
 
 ---
 
