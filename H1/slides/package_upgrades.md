@@ -15,7 +15,7 @@ footer: "Sui"
 
 /* ----- Base Section ----- */
 section {
-  background: #000000;
+  background: #000000 !important;
   color: #8B8B8B;
   font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 22px;
@@ -65,7 +65,7 @@ section p {
 }
 
 section strong {
-  color: #FFFFFF;
+  color: #FFFFFF !important;
   font-weight: 600;
 }
 
@@ -127,7 +127,8 @@ section table {
 }
 
 section th {
-  color: #FFFFFF;
+  color: #FFFFFF !important;
+  background: #000000 !important;
   font-weight: 600;
   text-align: left;
   padding: 10px 16px;
@@ -137,6 +138,7 @@ section th {
 section td {
   padding: 8px 16px;
   border-bottom: 1px solid #1A1A1A;
+  background: #000000 !important;
 }
 
 section hr {
@@ -775,21 +777,48 @@ Upgrading the Hero package from free minting to paid minting
 
 You will work with the `package_upgrade/` Hero game package:
 
-1. **Build and publish v1** -- free hero minting
-2. **Interact with v1** -- mint a hero via CLI
-3. **Modify code for v2** -- add paid minting, deprecate free minting
-4. **Upgrade the package** -- publish v2 on-chain
-5. **Migrate** -- update the Version object
-6. **Observe** -- old function fails, new function works
+1. **Setup** -- prepare your local environment
+2. **Build and publish v1** -- free hero minting
+3. **Interact with v1** -- mint a hero via CLI
+4. **Modify code for v2** -- add paid minting, deprecate free minting
+5. **Upgrade the package** -- publish v2 on-chain
+6. **Migrate** -- update the Version object
+7. **Observe** -- old function fails, new function works
 
 ---
 
-# Step 1: Publish v1
+# Step 1: Setup
+```bash
+# Make sure you have a local network configured as an environment
+sui client new-env --alias localnet --rpc http://127.0.0.1:9000
+```
+
+```bash
+# Start the local network
+RUST_LOG="off,sui_node=info" sui start --with-faucet --force-regenesis
+```
+
+```bash
+# Switch to the local network
+sui client switch --env localnet
+```
+
+```bash
+# Get some localnet SUI
+sui client faucet
+```
+
+```bash
+# Set your localnet id on Move.toml
+sui client chain-identifier
+```
+---
+
+# Step 2: Publish v1
 
 ```bash
 cd H1/package_upgrade
-sui move build
-sui client publish --gas-budget 100000000
+sui client test-publish --build-env localnet
 ```
 
 From the output, note:
@@ -802,7 +831,7 @@ From the output, note:
 
 ---
 
-# Step 2: Mint a Hero
+# Step 3: Mint a Hero
 
 ```bash
 sui client call \
@@ -825,7 +854,7 @@ You should see a `Hero` with *health: 100* and *stamina: 10*.
 
 <!-- _class: grid-2x2 -->
 
-# Step 3: Modify for v2
+# Step 4: Modify for v2
 
 <div class="grid">
 <div class="col">
@@ -860,22 +889,6 @@ Requires 5 SUI payment to create a Hero.
 
 ---
 
-# v2: Version Changes
-
-```move
-// version.move
-use sui::package::UpgradeCap;
-
-const VERSION: u64 = 2;  // bumped from 1
-
-public fun migrate(self: &mut Version, cap: &UpgradeCap) {
-    assert!(cap.package() == @package_upgrade, EInvalidPackageVersion);
-    self.version = VERSION;
-}
-```
-
----
-
 # v2: Hero Changes
 
 ```move
@@ -883,12 +896,12 @@ public fun migrate(self: &mut Version, cap: &UpgradeCap) {
 const EUseMintHeroV2Instead: u64 = 2;
 const HERO_PRICE: u64 = 5_000_000_000;  // 5 SUI
 
-public fun mint_hero(_version: &Version, _ctx: &mut TxContext): Hero {
+public fun mint_hero(_version: &HeroVersion, _ctx: &mut TxContext): Hero {
     abort EUseMintHeroV2Instead  // deprecated
 }
 
 public fun mint_hero_v2(
-    version: &Version, payment: Coin<SUI>, ctx: &mut TxContext,
+    version: &HeroVersion, payment: Coin<SUI>, ctx: &mut TxContext,
 ): Hero {
     version.check_is_valid();
     assert!(payment.value() >= HERO_PRICE, EInsufficientPayment);
@@ -899,7 +912,23 @@ public fun mint_hero_v2(
 
 ---
 
-# Step 4: Upgrade
+# v2: HeroVersion Changes
+
+```move
+// hero_version.move
+use sui::package::UpgradeCap;
+
+const VERSION: u64 = 2;  // bumped from 1
+
+public fun migrate(self: &mut HeroVersion, cap: &UpgradeCap) {
+    assert!(cap.package() == @package_upgrade, EInvalidPackageVersion);
+    self.version = VERSION;
+}
+```
+
+---
+
+# Step 5: Upgrade
 
 ```bash
 sui move build
@@ -912,7 +941,7 @@ Note the **new Package ID** from the output.
 
 ---
 
-# Step 5: Migrate
+# Step 6: Migrate
 
 Call `migrate` using the **new** package ID:
 
@@ -931,7 +960,7 @@ After this, the Version object's `version` field is updated to `2`.
 
 <!-- _class: cols-2-center -->
 
-# Step 6: Observe
+# Step 7: Observe
 
 <div class="grid">
 <div class="col">

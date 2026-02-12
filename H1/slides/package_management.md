@@ -596,7 +596,10 @@ edition = "2024"
 # Add modes = ["test"] for test-only dependencies
 
 [environments]
-# Map environment names to chain IDs (e.g., testnet = "4c78adac")
+# Map environment names to chain IDs.
+# mainnet and testnet are available by default without needing to include this section
+# For fetching your active environment chain ID run `sui client chain-identifier`
+# and include it here (e.g., localnet = "4c78adac")
 ```
 
 > Older projects may use `[addresses]` and `[dev-dependencies]` — see the *Migration Guide*.
@@ -795,17 +798,13 @@ Use `[environments]` to map names to chain IDs for multi-network builds.
 
 ---
 
-# CLI Commands
+## Key CLI Commands
 
 | Command | Description |
 |---|---|
-| `sui move build` | Compile the package |
-| `sui move test` | Run all `#[test]` functions |
-| `sui move test --filter <name>` | Run tests matching a name |
-| `sui move test --coverage` | Run tests with coverage reporting |
-| `sui client publish --gas-budget 100000000` | Publish to the active network |
-| `sui client test-publish` | Publish to an ephemeral network for testing |
-| `sui move update-deps` | Update to latest compatible versions |
+| `sui client chain-identifier` | Fetch active environment chain identifier |
+| `sui client test-publish --build-env <ENV>` | Publish to an ephemeral network for testing |
+| `sui move update-deps` | Update dependencies to latest compatible versions |
 
 ---
 
