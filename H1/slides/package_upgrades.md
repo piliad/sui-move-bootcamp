@@ -918,10 +918,6 @@ public fun mint_hero_v2(
 
 ```move
 // hero_version.move
-use sui::package::UpgradeCap;
-
-const EInvalidUpgradeCap: u64 = 1;
-
 const VERSION: u64 = 2;  // bumped from 1
 
 public fun migrate(self: &mut HeroVersion) {
@@ -952,7 +948,7 @@ sui client call \
   --package <NEW_PACKAGE_ID> \
   --module hero_version \
   --function migrate \
-  --args <HERO_VERSION_ID> <UPGRADE_CAP_ID>
+  --args <HERO_VERSION_ID>
 ```
 
 After this, the HeroVersion object's `version` field is updated to `2`.
