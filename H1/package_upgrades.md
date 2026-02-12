@@ -107,15 +107,40 @@ In this exercise you will publish the Hero game package (`package_upgrade/`), in
 ## Prerequisites
 
 - Sui CLI installed and configured
-- An active Sui address with testnet SUI (use `sui client faucet` if needed)
 - Working directory: `H1/package_upgrade/`
 
-## Step 1: Build and Publish v1
+## Step 1: Setup
+
+```bash
+# Make sure you have a local network configured as an environment
+sui client new-env --alias localnet --rpc http://127.0.0.1:9000
+```
+
+```bash
+# Start the local network
+RUST_LOG="off,sui_node=info" sui start --with-faucet --force-regenesis
+```
+
+```bash
+# Switch to the local network
+sui client switch --env localnet
+```
+
+```bash
+# Get some localnet SUI
+sui client faucet
+```
+
+```bash
+# Set your localnet id on Move.toml
+sui client chain-identifier
+```
+
+## Step 2: Build and Publish v1
 
 ```bash
 cd H1/package_upgrade
-sui move build
-sui client publish --gas-budget 100000000
+sui client test-publish --build-env localnet
 ```
 
 From the publish output, note three values:
@@ -124,11 +149,11 @@ From the publish output, note three values:
 |---|---|
 | **Package ID** | The `Published Objects` section, the new package address |
 | **UpgradeCap ID** | In `Created Objects`, the object with type `0x2::package::UpgradeCap` |
-| **Version ID** | In `Created Objects`, the object with type `<pkg>::version::Version` |
+| **HeroVersion ID** | In `Created Objects`, the object with type `<pkg>::hero_version::HeroVersion` |
 
 > Tip: Use `sui client objects` to list all objects owned by your address.
 
-## Step 2: Interact with v1
+## Step 3: Interact with v1
 
 Mint a free hero:
 
@@ -137,8 +162,7 @@ sui client call \
   --package <PACKAGE_ID> \
   --module hero \
   --function mint_hero \
-  --args <VERSION_ID> \
-  --gas-budget 10000000
+  --args <HERO_VERSION_ID>
 ```
 
 Note the **Hero object ID** from the output. You can inspect it:
@@ -149,45 +173,37 @@ sui client object <HERO_ID>
 
 You should see a `Hero` with `health: 100` and `stamina: 10`.
 
-## Step 3: Modify Code for v2
+## Step 4: Modify Code for v2
 
 Now make the following changes to upgrade the package:
 
-### 3a. Bump the version (`sources/version.move`)
+### 4a. Bump the version (`sources/hero_version.move`)
 
-Change the `VERSION` constant from `1` to `2`:
-
-```move
-const VERSION: u64 = 2;
-```
-
-Add a `migrate` function that an admin can call to update the shared `Version` object:
+Change the `VERSION` constant from `1` to `2` and add a `migrate` function to update the shared `HeroVersion` object:
 
 ```move
-public fun migrate(self: &mut Version, cap: &UpgradeCap) {
-    assert!(cap.package() == @package_upgrade, EInvalidPackageVersion); // package name = named address
+const VERSION: u64 = 2;  // bumped from 1
+
+public fun migrate(self: &mut HeroVersion) {
     self.version = VERSION;
 }
 ```
 
-You'll need to add the import:
+### 4b. Deprecate `mint_hero` and add `mint_hero_v2` (`sources/hero.move`)
+
+Add error and price constants:
 
 ```move
-use sui::package::UpgradeCap;
-```
-
-### 3b. Deprecate `mint_hero` and add `mint_hero_v2` (`sources/hero.move`)
-
-Add a new error constant:
-
-```move
+const EInsufficientPayment: u64 = 1;
 const EUseMintHeroV2Instead: u64 = 2;
+
+const HERO_PRICE: u64 = 5_000_000_000;  // 5 SUI
 ```
 
 Make `mint_hero` abort so old callers get a clear error:
 
 ```move
-public fun mint_hero(_version: &Version, _ctx: &mut TxContext): Hero {
+public fun mint_hero(_version: &HeroVersion, _ctx: &mut TxContext) {
     abort EUseMintHeroV2Instead
 }
 ```
@@ -198,48 +214,41 @@ Add the paid minting function (5 SUI = 5_000_000_000 MIST):
 use sui::coin::Coin;
 use sui::sui::SUI;
 
-const HERO_PRICE: u64 = 5_000_000_000;
-const EInsufficientPayment: u64 = 3;
-
 public fun mint_hero_v2(
-    version: &Version,
+    version: &HeroVersion,
     payment: Coin<SUI>,
     ctx: &mut TxContext,
-): Hero {
+) {
     version.check_is_valid();
     assert!(payment.value() >= HERO_PRICE, EInsufficientPayment);
-    transfer::public_transfer(payment, ctx.sender()); // simplified; in production, send to a treasury address
-    Hero {
-        id: object::new(ctx),
-        health: 100,
-        stamina: 10,
-    }
+    transfer::public_transfer(payment, ctx.sender());
+    let hero = Hero { id: object::new(ctx), health: 100, stamina: 10 };
+    transfer::transfer(hero, ctx.sender());
 }
 ```
 
-## Step 4: Upgrade the Package
+## Step 5: Upgrade the Package
 
 ```bash
 sui move build
-sui client upgrade --upgrade-capability <UPGRADE_CAP_ID> --gas-budget 100000000
+sui client test-upgrade --upgrade-capability <UPGRADE_CAP_ID>
 ```
 
 Note the **new Package ID** from the output.
 
-## Step 5: Migrate the Version Object
+## Step 6: Migrate the HeroVersion Object
 
-Call the `migrate` function using the **new** package ID:
+Call the `migrate` function using the **new** package ID to update the `HeroVersion` object:
 
 ```bash
 sui client call \
   --package <NEW_PACKAGE_ID> \
-  --module version \
+  --module hero_version \
   --function migrate \
-  --args <VERSION_ID> <UPGRADE_CAP_ID> \
-  --gas-budget 10000000
+  --args <HERO_VERSION_ID>
 ```
 
-## Step 6: Observe the Differences
+## Step 7: Observe the Differences
 
 ### Old `mint_hero` now fails
 
@@ -248,8 +257,7 @@ sui client call \
   --package <NEW_PACKAGE_ID> \
   --module hero \
   --function mint_hero \
-  --args <VERSION_ID> \
-  --gas-budget 10000000
+  --args <HERO_VERSION_ID>
 ```
 
 This will abort with `EUseMintHeroV2Instead`.
@@ -263,8 +271,7 @@ sui client call \
   --package <NEW_PACKAGE_ID> \
   --module hero \
   --function mint_hero_v2 \
-  --args <VERSION_ID> <COIN_ID> \
-  --gas-budget 10000000
+  --args <HERO_VERSION_ID> <COIN_ID>
 ```
 
 This succeeds and creates a new Hero.
