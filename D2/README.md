@@ -12,17 +12,12 @@ public struct Hero has key, store {
 }
 ```
 
-### Useful Links
-
-- [Sui And Community SDKs](https://docs.sui.io/references/sui-sdks)
-- [Sui Typescript SDK](https://sdk.mystenlabs.com/typescript)
-
 ### Quickstart
 
 - Create a .env file in the `get-hero/` directory, following the structure of the [.env.example](./get-hero/.env.example):
 
 ```
-SUI_NETWORK=https://rpc.testnet.sui.io:443
+SUI_NETWORK=testnet
 PACKAGE_ID=0x26cc4e8173393efa8411b376c17420dc59e48ee6649a634cfaee98477efe5435
 ```
 
@@ -44,7 +39,7 @@ npm run test
 #### 1. Fetch the object data from the chain
 
 - Modify the function [getHero.ts](./get-hero/src/helpers/getHero.ts), so that the object is fetched
-- You should use the [suiClient.getObject](https://github.com/MystenLabs/ts-sdks/blob/main/packages/typescript/src/client/client.ts#L353-L365) method
+- You should use the [suiClient.getObject](https://sdk.mystenlabs.com/sui/migrations/sui-2.0/sui) method
 - The `Hero Exists` test should pass
 
 #### 2. Parse its "Hero" fields
