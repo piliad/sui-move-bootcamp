@@ -1,22 +1,22 @@
 {
-  "name": "ts1",
+  "name": "ts-scaffold",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "dev": "env-cmd -f .env ts-node src/index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "typescript": "^5.9.3"
-  },
+  "description": "",
   "dependencies": {
     "@mysten/sui": "^2.4.0",
-    "@types/node": "^25.2.3",
-    "dotenv": "^17.3.1",
+    "dotenv": "^16.4.7",
+    "env-cmd": "^10.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
     "vitest": "^4.0.18",
-    "zod": "^4.3.6"
+    "zod": "^3.24.2"
   }
 }

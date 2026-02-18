@@ -4,6 +4,7 @@ import { z } from "zod";
 dotenv.config();
 
 const envSchema = z.object({
+  SUI_NETWORK: z.enum(["testnet", "devnet", "localnet"]),
   MY_ADDRESS: z.string(),
 });
 
