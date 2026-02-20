@@ -1,5 +1,3 @@
 [package]
 name = "silver"
 edition = "2024"
-
-[dependencies]

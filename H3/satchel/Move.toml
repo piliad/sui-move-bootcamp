@@ -1,5 +1,3 @@
 [package]
 name = "satchel"
 edition = "2024"
-
-[dependencies]

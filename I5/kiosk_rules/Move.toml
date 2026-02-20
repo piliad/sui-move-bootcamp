@@ -1,5 +1,3 @@
 [package]
 name = "kiosk"
 edition = "legacy"
-
-[dependencies]

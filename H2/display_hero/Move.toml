@@ -1,5 +1,3 @@
 [package]
 name = "display"
 edition = "2024"
-
-[dependencies]

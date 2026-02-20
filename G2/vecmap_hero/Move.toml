@@ -1,5 +1,3 @@
 [package]
 name = "vecmap_hero"
 edition = "2024"
-
-[dependencies]

@@ -1,5 +1,3 @@
 [package]
 name = "weather_oracle"
 edition = "2024"
-
-[dependencies]

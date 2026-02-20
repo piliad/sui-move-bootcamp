@@ -1,5 +1,3 @@
 [package]
 name = "basic_move"
 edition = "2024"
-
-[dependencies]

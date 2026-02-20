@@ -1,5 +1,3 @@
 [package]
 name = "sui_primitives"
 edition = "2024"
-
-[dependencies]

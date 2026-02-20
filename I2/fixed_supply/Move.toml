@@ -1,5 +1,3 @@
 [package]
 name = "fixed_supply"
 edition = "2024"
-
-[dependencies]

@@ -1,5 +1,3 @@
 [package]
 name = "my_fist_contract"
 edition = "2024"
-
-[dependencies]

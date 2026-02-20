@@ -1,5 +1,3 @@
 [package]
 name = "uid_hero"
 edition = "2024"
-
-[dependencies]

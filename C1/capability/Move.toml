@@ -1,5 +1,3 @@
 [package]
 name = "capability"
 edition = "2024"
-
-[dependencies]

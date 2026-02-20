@@ -1,5 +1,3 @@
 [package]
 name = "publisher"
 edition = "2024"
-
-[dependencies]

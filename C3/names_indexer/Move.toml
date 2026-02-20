@@ -1,5 +1,3 @@
 [package]
 name = "names_indexer"
 edition = "2024"
-
-[dependencies]

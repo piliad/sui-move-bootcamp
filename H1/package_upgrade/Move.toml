@@ -1,5 +1,3 @@
 [package]
 name = "package_upgrade"
 edition = "2024"
-
-[dependencies]

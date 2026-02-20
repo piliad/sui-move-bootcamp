@@ -1,5 +1,3 @@
 [package]
 name = "weapon"
 edition = "2024"
-
-[dependencies]

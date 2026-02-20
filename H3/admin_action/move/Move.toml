@@ -1,5 +1,3 @@
 [package]
 name = "admin_action"
 edition = "2024"
-
-[dependencies]
