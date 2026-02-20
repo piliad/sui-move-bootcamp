@@ -1,58 +1,25 @@
-import { ConnectButton } from "@mysten/dapp-kit";
-import { Box, Container, Flex, Heading } from "@radix-ui/themes";
-import { WalletStatus } from "./WalletStatus";
-import { HeroesList } from "./HeroesList";
-import { CreateHeroForm } from "./CreateHeroForm";
+import { ConnectButton } from "@mysten/dapp-kit-react";
+import { HeroesList } from "./components/ui/HeroesList";
+import { CreateHeroForm } from "./components/ui/CreateHeroForm";
 
 function App() {
   return (
-    <>
-      <Flex
-        position="sticky"
-        px="4"
-        py="2"
-        justify="between"
-        style={{
-          borderBottom: "1px solid var(--gray-a2)",
-        }}
-      >
-        <Box>
-          <Heading>dApp Starter Template</Heading>
-        </Box>
-
-        <Box>
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto flex h-14 items-center justify-between px-4">
+          <h1 className="text-lg font-semibold">Sui dApp Starter</h1>
           <ConnectButton />
-        </Box>
-      </Flex>
-      <Container>
-        <Container>
-          <Container
-            mt="5"
-            pt="2"
-            px="4"
-            style={{ background: "var(--gray-a2)", minHeight: 500 }}
-          >
-            <HeroesList />
-          </Container>
-        </Container>
-        <Container
-          mt="5"
-          pt="2"
-          px="4"
-          style={{ background: "var(--gray-a2)", minHeight: 500 }}
-        >
-          <WalletStatus />
-        </Container>
-        <Container
-          mt="5"
-          pt="2"
-          px="4"
-          style={{ background: "var(--gray-a2)", minHeight: 500 }}
-        >
-          <CreateHeroForm />
-        </Container>
-      </Container>
-    </>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-8 text-center">
+        <CreateHeroForm />
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
+        <HeroesList />
+      </div>
+    </div>
   );
 }
 

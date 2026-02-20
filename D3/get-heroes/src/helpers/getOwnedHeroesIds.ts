@@ -1,5 +1,6 @@
 import { ENV } from "../env";
 import { suiClient } from "../suiClient";
+import { SuiClientTypes } from "@mysten/sui/client";
 
 /**
  * Gets all of the Hero NFTs owned by the given address.
@@ -7,25 +8,19 @@ import { suiClient } from "../suiClient";
  */
 export const getOwnedHeroesIds = async (owner: string) => {
   let allHeroesIds: string[] = [];
-  let nextCursor = null;
+  let cursor: string | null = null;
   let hasNextPage = true;
 
   while (hasNextPage) {
-    console.log(`Getting Heroes with cursor: ${nextCursor}`);
-    const {
-      data,
-      hasNextPage: tempHasNextPage,
-      nextCursor: tempHasNextCursor,
-    } = await suiClient.getOwnedObjects({
+    console.log(`Getting Heroes with cursor: ${cursor}`);
+    const response: SuiClientTypes.ListOwnedObjectsResponse = await suiClient.listOwnedObjects({
       owner,
-      filter: {
-        StructType: `${ENV.PACKAGE_ID}::hero::Hero`,
-      },
-      ...(nextCursor ? { cursor: nextCursor } : {}),
+      type: `${ENV.PACKAGE_ID}::hero::Hero`,
+      cursor,
     });
-    hasNextPage = tempHasNextPage;
-    nextCursor = tempHasNextCursor;
-    allHeroesIds.push(...data.map((hero) => hero.data!.objectId));
+    hasNextPage = response.hasNextPage;
+    cursor = response.cursor;
+    allHeroesIds.push(...response.objects.map((obj) => obj.objectId));
   }
 
   return allHeroesIds;

@@ -1,24 +1,26 @@
 import {
   useCurrentAccount,
-  useSignAndExecuteTransaction,
-  useSuiClient,
-} from "@mysten/dapp-kit";
+  useCurrentClient,
+  useDAppKit
+} from "@mysten/dapp-kit-react";
 import { Transaction } from "@mysten/sui/transactions";
-import { Button } from "@radix-ui/themes";
 import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 export const CreateHeroForm = () => {
   const queryClient = useQueryClient();
-  const suiClient = useSuiClient();
+  const suiClient = useCurrentClient();
+  const [isPending, setIsPending] = useState(false);
+  const {signAndExecuteTransaction} = useDAppKit();
   const account = useCurrentAccount();
-  const { mutateAsync: signAndExecuteTransaction, isPending } =
-    useSignAndExecuteTransaction();
 
   const handleMint = async () => {
     if (!account) {
       alert("Connect your wallet");
       return;
     }
+    setIsPending(true);
+
     const tx = new Transaction();
 
     // TODO: Populate the commands of the transaction to:
@@ -47,15 +49,18 @@ export const CreateHeroForm = () => {
     await signAndExecuteTransaction({
       transaction: tx,
     }).then(async (resp) => {
-      await suiClient.waitForTransaction({ digest: resp.digest });
+      await suiClient.waitForTransaction({ digest: resp.Transaction!.digest });
       await queryClient.invalidateQueries({
-        queryKey: ["testnet", "getOwnedObjects"],
+        queryKey: ["getObject"],
       });
       await queryClient.invalidateQueries({
-        queryKey: ["testnet", "getObject"],
+        queryKey: ["ownedObjects", account.address],
       });
     });
+
+    setIsPending(false);
   };
+  
 
   if (!account) {
     return <div>Wallet not connected</div>;
@@ -65,5 +70,5 @@ export const CreateHeroForm = () => {
     return <div>Loading...</div>;
   }
 
-  return <Button onClick={handleMint}>Mint Hero</Button>;
+  return <button className="m-auto p-2 bg-green-600" onClick={handleMint}>Mint Hero</button>;
 };
