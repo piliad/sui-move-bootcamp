@@ -1,13 +1,8 @@
 import { useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
 import { Transaction } from "@mysten/sui/transactions";
-import { getJsonRpcFullnodeUrl, SuiJsonRpcClient } from "@mysten/sui/jsonRpc";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const MintNFTForm = () => {
-
-    // hooks, variables, context
-    const client = new SuiJsonRpcClient({url: getJsonRpcFullnodeUrl("devnet"), network: "devnet"});
-
     const account = useCurrentAccount();
     const { signAndExecuteTransaction, getClient } = useDAppKit();
     const suiClient = getClient();

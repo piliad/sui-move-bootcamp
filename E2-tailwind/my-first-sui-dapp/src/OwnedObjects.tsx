@@ -13,29 +13,6 @@ export function OwnedObjects() {
   const account = useCurrentAccount();
   const client = useCurrentClient();
 
-  const {data, isRefetching, isEnabled } = useSuiClientQuery(
-    "getOwnedObjects"
-    {
-      owner: address
-    },
-    {
-      enabled: !!account?.address
-    }
-  );
-
-  const {data, isRefetching, isEnabled } = useQuery({
-    queryKey: ["testnet", "getOwnedObjects"],
-    queryFn: async() => {
-
-      await client.listOwnedObjects({
-        owner: address
-      });
-
-    },
-    enabled: !!account?.address
-
-  })
-
   const { data, isPending, error } = useQuery({
     queryKey: ["ownedObjects", account?.address],
     queryFn: async () => {
