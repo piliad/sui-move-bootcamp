@@ -7,7 +7,6 @@ export const getOauthUrl = (
   switch (oauthConfig.providerName.toLowerCase()) {
     case "google": {
       const redirectUri = window.location.origin;
-      console.log("redirectUri", redirectUri);
       const url = `https://accounts.google.com/o/oauth2/v2/auth?response_type=id_token&client_id=${oauthConfig.clientId}&redirect_uri=${encodeURIComponent(
         redirectUri
       )}&scope=openid%20email%20profile&prompt=select_account&nonce=${nonce}`;
