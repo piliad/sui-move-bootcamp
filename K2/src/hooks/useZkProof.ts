@@ -1,9 +1,8 @@
 import { useAppContext } from "../contexts/AppContext";
 import { fetchZkProof, randomnessToBase64, saltToBase64 } from "../utils/zk";
-import { getExtendedEphemeralPublicKey } from '@mysten/sui/zklogin';
 
 export const useZkProof = () => {
-    const { salt, ephemeral, jwt, zkProof } = useAppContext();
+    const { zkProof } = useAppContext();
 
     const preparePayload = () => {
         return {

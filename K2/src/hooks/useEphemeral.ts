@@ -1,13 +1,9 @@
-import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
-import { generateNonce, generateRandomness } from "@mysten/sui/zklogin";
 import { useAppContext } from "../contexts/AppContext";
-import { suiClient } from "./useAppConfig";
-import { CONFIG } from "../config";
+import { suiReadClient } from "../services/sui";
 
 // Get the current epoch for the given network
 const getEpoch = async () => {
-    const { epoch } = { epoch: "0" }; // get epoch from sui client "getLatestSuiSystemState"
-    return Number(epoch);
+    return suiReadClient.getCurrentEpoch();
 }
 
 export const useEphemeral = () => {
@@ -15,8 +11,8 @@ export const useEphemeral = () => {
 
     const generateEphemeral = async () => {
         // Generate: ephemeral key pair, public key, randomness, nonce, and max epoch.
-        const ephemeralKeyPair = "Not Implemented";
-        const publicKey = "Not Implemented";
+        const ephemeralKeyPair = null;
+        const publicKey = null;
         const randomness = "Not Implemented";
         const maxEpoch = (await getEpoch()) + 0; // max epoch is current epoch + ephemeral key duration in config
         const nonce = "Not Implemented";
