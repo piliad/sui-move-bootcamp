@@ -22,11 +22,12 @@ export const useLiveTransaction = () => {
     const refreshRecipientBalance = async (_address?: string) => {
         const address = _address ?? liveTransaction.recipientAddress!;
         setIsRefreshing(true);
-
-        const balance = await suiReadClient.getSuiBalance(address);
-
-        liveTransaction.setRecipientBalance(balance);
-        setIsRefreshing(false);
+        try {
+            const balance = await suiReadClient.getSuiBalance(address);
+            liveTransaction.setRecipientBalance(balance);
+        } finally {
+            setIsRefreshing(false);
+        }
     }
 
     const sendSui = async (amount: number, recipientAddress: string) => {

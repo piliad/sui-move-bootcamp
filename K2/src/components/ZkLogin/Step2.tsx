@@ -8,7 +8,7 @@ interface Step2Props {
 }
 
 const Step2 = ({ onNext }: Step2Props) => {
-    const { proceedButton } = useStep2(onNext);
+    const { proceedButton, error } = useStep2(onNext);
 
     return (
         <div className="space-y-6">
@@ -82,6 +82,9 @@ const Step2 = ({ onNext }: Step2Props) => {
                     </div>
 
                     <div className="text-center pt-4">
+                        {error && (
+                            <p className="text-sm text-red-500 mb-3">{error}</p>
+                        )}
                         {proceedButton}
                     </div>
                 </div>
