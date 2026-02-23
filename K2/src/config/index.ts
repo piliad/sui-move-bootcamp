@@ -1,6 +1,7 @@
 export const CONFIG = {
     app: {
         network: import.meta.env.VITE_NETWORK,
+        grpcUrl: import.meta.env.VITE_SUI_GRPC_URL || "https://fullnode.devnet.sui.io:443",
         salt: import.meta.env.VITE_SALT,
         ephemeralKeyDuration: Number(import.meta.env.VITE_EPHEMERAL_KEY_DURATION_EPOCHS)
     },
