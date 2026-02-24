@@ -209,6 +209,11 @@ To complete the implementation, you'll need to edit these key files:
    - Prepare payload for proof generation
    - Understand zero-knowledge proof concepts
 
+6. **Implement Write Client** (`src/services/sui/writeClient.ts`)
+   - Build and sign transfer transactions with the ephemeral signer
+   - Split SUI coins and transfer to recipient
+   - Execute zkLogin transaction through the gRPC client
+
 ## 🔧 Development Tips
 
 ### Debugging
