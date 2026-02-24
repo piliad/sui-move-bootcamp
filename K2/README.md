@@ -145,6 +145,11 @@ This version contains complete implementations of all ZKLogin functionality:
 - ✅ Integration with all components
 - ✅ Proper proof generation flow
 
+#### 6. Write Client Imeplemntation (`src/services/sui/writeClient.ts`)
+
+- ✅ Complete buildAndSignTransfer function
+- ✅ Complete executeZkLoginTransaction function
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -234,9 +239,15 @@ This fully implemented version contains complete code for all ZKLogin functional
    - Learn OAuth identity to blockchain address mapping
 
 5. **Analyze ZK Proof** (`useZkProof.ts`)
+
    - Study component integration
    - Understand payload preparation
    - Learn zero-knowledge proof concepts
+
+6. **Study Write Client** (`src/services/sui/writeClient.ts`)
+   - Examine transaction building and signing flow
+   - Understand coin splitting and recipient transfer operations
+   - Review gRPC-based zkLogin transaction execution
 
 ## 🔧 Development Tips
 
