@@ -347,7 +347,7 @@ Train enough times and level up again. With `xp_per_level` now set to `150`, the
 
 ### Compare v1 vs v2 heroes
 
-Mint a new hero using the v2 package and train both heroes. The v1 hero (migrated) and the v2 hero share the same `Hero` type but experience the rebalanced mechanics: 30 XP per training session and 150 XP per level instead of the original 50 and 100.
+Mint a new hero using the v2 package and train both heroes. The v1 hero (migrated) and the v2 hero share the same `Hero` type but experience the rebalanced mechanics: 30 XP per training session (down from 50) and 150 XP per level (up from 100).
 
 ## Further Reading
 
