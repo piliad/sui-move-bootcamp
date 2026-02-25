@@ -783,7 +783,7 @@ You will work with the `package_upgrade/` Hero game package:
 3. **Play the game** -- train heroes and level them up via CLI
 4. **Modify code for v2** -- rebalance XP mechanics, deprecate old train
 5. **Upgrade the package** -- publish v2 on-chain
-6. **Migrate** -- update the TrainingGround and Hero objects
+6. **Migrate** -- update the TrainingGround shared object
 7. **Observe** -- old train fails, new train_v2 works with rebalanced XP
 
 ---
@@ -860,7 +860,7 @@ Inspect the hero: `lvl: 2`, `xp: 0`, `xp_2_lvl_up: 200`.
 
 ### Bump VERSION
 
-Change constant from `1` to `2` in both modules.
+Change constant from `1` to `2` in `training_ground`.
 
 </div>
 <div class="col">
@@ -906,21 +906,7 @@ public fun train(_self: &TrainingGround, _hero: &mut Hero) {
 
 public fun train_v2(self: &TrainingGround, hero: &mut Hero) {
     self.check_is_valid();
-    hero.check_is_valid();
     hero.add_xp(30);  // reduced from 50
-}
-```
-
----
-
-# v2: Hero Changes
-
-```move
-// hero.move
-const VERSION: u64 = 2;  // bumped from 1
-
-public fun migrate_hero(hero: &mut Hero) {
-    hero.version = 2;
 }
 ```
 
@@ -967,7 +953,7 @@ sui client call --package <OLD_PACKAGE_ID> \
 
 # Step 6: Migrate
 
-Call `migrate` on the TrainingGround and `migrate_hero` on existing heroes:
+Call `migrate` on the TrainingGround to activate v2:
 
 ```bash
 sui client call \
@@ -975,14 +961,6 @@ sui client call \
   --module training_ground \
   --function migrate \
   --args <TRAINING_GROUND_ID>
-```
-
-```bash
-sui client call \
-  --package <NEW_PACKAGE_ID> \
-  --module hero \
-  --function migrate_hero \
-  --args <HERO_ID>
 ```
 
 ---

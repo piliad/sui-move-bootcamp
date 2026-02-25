@@ -237,20 +237,7 @@ public fun train(_self: &TrainingGround, _hero: &mut Hero) {
 /// Train a hero (v2): grants 30 XP per session instead of 50.
 public fun train_v2(self: &TrainingGround, hero: &mut Hero) {
     self.check_is_valid();
-    hero.check_is_valid();
     hero.add_xp(30);
-}
-```
-
-### 4b. Bump version in Hero (`sources/hero.move`)
-
-Change the `VERSION` constant from `1` to `2` and add a `migrate_hero` function:
-
-```move
-const VERSION: u64 = 2;  // bumped from 1
-
-public fun migrate_hero(hero: &mut Hero) {
-    hero.version = 2;
 }
 ```
 
@@ -295,7 +282,7 @@ This succeeds and grants 50 XP as before.
 
 ## Step 6: Migrate
 
-Call `migrate` on the TrainingGround and `migrate_hero` on your existing hero, using the **new** package ID:
+Call `migrate` on the TrainingGround using the **new** package ID:
 
 ```bash
 sui client call \
@@ -303,14 +290,6 @@ sui client call \
   --module training_ground \
   --function migrate \
   --args <TRAINING_GROUND_ID>
-```
-
-```bash
-sui client call \
-  --package <NEW_PACKAGE_ID> \
-  --module hero \
-  --function migrate_hero \
-  --args <HERO_ID>
 ```
 
 After this, the TrainingGround's `version` is `2` and `xp_per_level` is `150`.

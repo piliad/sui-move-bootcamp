@@ -34,14 +34,12 @@ public fun check_is_valid(self: &TrainingGround) {
 /// Train a hero, granting XP.
 public fun train(self: &TrainingGround, hero: &mut Hero) {
     self.check_is_valid();
-    hero.check_is_valid();
     hero.add_xp(XP_PER_TRAINING);
 }
 
 /// Level up a hero. Requires enough accumulated XP.
 public fun level_up(self: &TrainingGround, hero: &mut Hero) {
     self.check_is_valid();
-    hero.check_is_valid();
     let current_xp = hero.xp();
     let req_xp = hero.xp_2_lvl_up();
     let current_lvl = hero.lvl();
