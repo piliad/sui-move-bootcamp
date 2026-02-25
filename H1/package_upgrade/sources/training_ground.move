@@ -46,14 +46,12 @@ public fun train(_self: &TrainingGround, _hero: &mut Hero) {
 /// Train a hero (v2): grants 30 XP per session instead of 50.
 public fun train_v2(self: &TrainingGround, hero: &mut Hero) {
     self.check_is_valid();
-    hero.check_is_valid();
     hero.add_xp(30);
 }
 
 /// Level up a hero. Requires enough accumulated XP.
 public fun level_up(self: &TrainingGround, hero: &mut Hero) {
     self.check_is_valid();
-    hero.check_is_valid();
     let current_xp = hero.xp();
     let req_xp = hero.xp_2_lvl_up();
     let current_lvl = hero.lvl();
