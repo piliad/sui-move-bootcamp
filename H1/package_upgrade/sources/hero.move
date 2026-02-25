@@ -2,15 +2,11 @@ module package_upgrade::hero;
 
 use sui::package;
 
-const VERSION: u64 = 2;
-const EInvalidPackageVersion: u64 = 0;
-
 public struct HERO() has drop;
 
 /// Hero NFT
 public struct Hero has key, store {
     id: UID,
-    version: u64,
     lvl: u64,
     xp: u64,
     xp_2_lvl_up: u64,
@@ -25,20 +21,11 @@ fun init(otw: HERO, ctx: &mut TxContext) {
 public fun mint_hero(ctx: &mut TxContext) {
     let hero = Hero {
         id: object::new(ctx),
-        version: VERSION,
         lvl: 1,
         xp: 0,
         xp_2_lvl_up: 100,
     };
     transfer::transfer(hero, ctx.sender());
-}
-
-public fun check_is_valid(self: &Hero) {
-    assert!(self.version == VERSION, EInvalidPackageVersion);
-}
-
-public fun migrate_hero(hero: &mut Hero) {
-    hero.version = 2;
 }
 
 // === Package Accessors ===
