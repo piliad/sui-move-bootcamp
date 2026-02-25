@@ -697,7 +697,7 @@ public fun check_is_valid(self: &TrainingGround) {
 
 # Version Migration
 
-Public functions that mutate shared state take `&Version` and call `check_is_valid()`.
+Public functions that mutate shared state take `&TrainingGround` and call `check_is_valid()`.
 
 On upgrade, a `migrate` function flips the switch.
 
@@ -715,7 +715,7 @@ Update the constant in the new package code.
 
 #### Add migrate()
 
-A function that updates the shared Version object's field.
+A function that updates the shared TrainingGround object's fields.
 
 </div>
 <div class="card">
