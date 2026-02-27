@@ -58,7 +58,7 @@ export function OwnedObjects() {
                 key={object.objectId}
                 className="rounded-md border bg-muted/50 p-3"
               >
-                <p className="font-mono text-xs break-all">{object.objectId}</p>
+                  <p className="font-mono text-xs break-all">{object.objectId}</p>
               </div>
             ))}
           </div>
