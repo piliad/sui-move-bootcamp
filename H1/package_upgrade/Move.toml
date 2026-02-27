@@ -3,4 +3,4 @@ name = "package_upgrade"
 edition = "2024"
 
 [environments]
-localnet=""
+localnet="fb4e5923"
