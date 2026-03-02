@@ -1,7 +1,9 @@
 import { ConnectButton } from "@mysten/dapp-kit-react";
 import { WalletStatus } from "./WalletStatus";
+import { HeroesList } from "./components/ui/HeroesList";
 
 function App() {
+
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -10,6 +12,9 @@ function App() {
           <ConnectButton />
         </div>
       </header>
+
+      HEROES LIST:
+      <HeroesList />
 
       <main className="container mx-auto px-4 py-8">
         <WalletStatus />

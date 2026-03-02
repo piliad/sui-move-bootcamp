@@ -2,6 +2,9 @@
 module hero::hero;
 
 use std::string::String;
+use sui::transfer::share_object;
+use sui::kiosk_extension::can_lock;
+// use hero::hero::Weapon;
 
 /// Constants.
 const EAlreadyEquipedWeapon: u64 = 1;
@@ -36,7 +39,15 @@ public struct HeroRegistry has key {
 /// Init function.
 
 /// Creates a new HeroRegistry and shares it.
-fun init(ctx: &mut TxContext) {}
+fun init(ctx: &mut TxContext) {
+
+    let hero = HeroRegistry {
+        id: object::new(ctx),
+        ids: vector::empty(),
+        counter: 0,
+    };
+    transfer::share_object(hero);
+}
 
 /// Public functions.
 
@@ -48,22 +59,44 @@ public fun new_hero(
     stamina: u64,
     registry: &mut HeroRegistry,
     ctx: &mut TxContext,
-) {}
+): Hero { 
+        let hero = Hero {
+            id: object::new(ctx),
+            name,
+            stamina,
+            weapon: option::none(),
+        };
+        vector::push_back(&mut registry.ids, object::id(&hero));
+        registry.counter = registry.counter + 1;
+        hero
+}
 
 /// Receives a name and attack, creates a new Weapon, and returns it.
-public fun new_weapon(name: String, attack: u64, ctx: &mut TxContext) {}
+public fun new_weapon(name: String, attack: u64, ctx: &mut TxContext) : Weapon {
+    let weapon = Weapon {
+        id: object::new(ctx),
+        name,
+        attack,
+    };
+    weapon
+
+}
 
 /// Receives a Hero and a Weapon, and equips the Weapon to the Hero.
 /// If the Hero already has a Weapon, it should abort with EAlreadyEquipedWeapon.
 /// In the scaffold we delete the weapon so that we don't get a build error.
 public fun equip_weapon(hero: &mut Hero, weapon: Weapon) {
-    let Weapon { id, name: _, attack: _ } = weapon;
-    object::delete(id);
+    assert!(hero.weapon.is_none(), EAlreadyEquipedWeapon);
+    hero.weapon.fill(weapon);
+    
 }
 
 /// Receives a Hero, unequips the Weapon from the Hero, and returns the Weapon.
 /// If the Hero does not have a Weapon, it should abort with ENotEquipedWeapon.
-public fun unequip_weapon(hero: &mut Hero) {}
+public fun unequip_weapon(hero: &mut Hero): Weapon {
+    assert!(hero.weapon.is_some(), ENotEquipedWeapon);
+    hero.weapon.extract()
+}
 
 /// Accessors.
 
